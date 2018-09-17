@@ -79,7 +79,7 @@ describe('GET /todos/:id', () =>{
         .get(`/todos/${testTodos[0]._id}`)
         .expect(200)
         .expect((res)=>{
-            console.log(res.body)
+            
             expect(res.body.todo.text).toBe(testTodos[0].text)
         })
         .end(done)
@@ -99,5 +99,43 @@ describe('GET /todos/:id', () =>{
         .get(`/todos/123`)
         .expect(404)
         .end(done)
+    })
+})
+
+describe('DELETE /todos/:id', () =>{
+    it('should remove a todo doc', (done)=>{
+        request(app)
+        .delete(`/todos/${testTodos[1]._id}`)
+        .expect(200)
+        .expect((res)=>{
+            
+            expect(res.body.todo.text).toBe(testTodos[1].text)
+        })
+        .end((err,res)=>{
+            if(err){
+                return done(err)
+            }
+            Todo.findById(testTodos[1]._id).then((todo)=>{
+                expect(todo).toNotExist()
+                done()
+            }).catch((e)=>done(e))
+        })
+    })
+
+    it('should return 404 if todo not found', (done)=>{
+        newID = new ObjectID()
+        request(app)
+        .delete(`/todos/${newID}`)
+        .expect(404)
+        .end(done)
+    })
+
+    it('should return 404 for non-objects ids', (done)=>{
+        newID = new ObjectID()
+        request(app)
+        .delete(`/todos/123`)
+        .expect(404)
+        .end(done)
+
     })
 })
