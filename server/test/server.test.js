@@ -10,7 +10,9 @@ var testTodos = [{
     text: "Dummy todo 1"
 },{
     _id: new ObjectID(),
-    text: "Dummy todo 2"
+    text: "Dummy todo 2",
+    completed: true,
+    completedAt: 333
 }]
 
 beforeEach((done)=>{
@@ -136,6 +138,41 @@ describe('DELETE /todos/:id', () =>{
         .delete(`/todos/123`)
         .expect(404)
         .end(done)
+
+    })
+})
+
+describe('PATCH /todos/:id', () =>{
+    it('should update the todo',(done)=>{
+        var id = testTodos[0]._id
+        var todoUpdated = {text: 'Updated Text', completed:true}
+        request(app)
+        .patch(`/todos/${id}`)
+        .send(todoUpdated)
+        .expect(200)
+        .expect((res)=>{
+            
+            expect(res.body.todo.text).toBe(todoUpdated.text)
+            expect(res.body.todo.completed).toBe(todoUpdated.completed)
+            expect(res.body.todo.completedAt).toBeA('number')
+           
+        }).end(done)
+    })
+
+    it('sholud clear completedAt when todo is not completed',(done)=>{
+        var id = testTodos[0]._id
+        var todoUpdated = {text: 'Updated Text', completed:false}
+        request(app)
+        .patch(`/todos/${id}`)
+        .send(todoUpdated)
+        .expect(200)
+        .expect((res)=>{            
+            expect(res.body.todo.text).toBe(todoUpdated.text)
+            expect(res.body.todo.completed).toBe(todoUpdated.completed)
+            expect(res.body.todo.completedAt).toNotExist()
+            
+        }).end(done)
+       
 
     })
 })
