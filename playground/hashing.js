@@ -1,4 +1,19 @@
 const jwt = require('jsonwebtoken')
+const brcrypt = require('bcryptjs')
+
+var password = '123abc'
+
+brcrypt.genSalt(10,(err,salt)=>{
+    brcrypt.hash(password,salt,(err,hash)=>{
+        console.log(hash)
+    })
+})
+
+var hashPassword = 'asd'
+
+brcrypt.compare(password,hashPassword,(err,res)=>{
+    console.log(res)
+})
 
 var data = {
     id: 10
