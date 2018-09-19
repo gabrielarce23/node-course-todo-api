@@ -6,6 +6,7 @@ const _ = require('lodash')
 const {mongoose} = require('./db/mongoose')
 const {Todo} = require('./models/todo')
 const {User} = require('./models/user')
+const {authenticate} = require('./middleware/authenticate')
 
 const app = express()
 const port = process.env.PORT
@@ -104,13 +105,23 @@ app.post('/users',(req,res) =>{
     var user = new User(_.pick(req.body,['email','password']))
 
     user.save().then(()=>{
-        user.generateAuthToken()
+        return user.generateAuthToken()
         
     }).then((token)=>{
+        
         res.header('x-auth',token).send(user)
-    }).catch((e)=> res.status(400).send(e))
+    }).catch((e)=> {
+        
+        res.status(400).send(e)
+    })
 })
 
+
+
+app.get('/users/me',authenticate,(req,res)=>{
+    
+   res.send(req.user)
+})
 
 
 
