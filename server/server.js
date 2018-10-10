@@ -1,4 +1,5 @@
 require('./config/config')
+var cors = require('cors')
 const express = require('express')
 const bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb')
@@ -9,6 +10,16 @@ const {User} = require('./models/user')
 const {authenticate} = require('./middleware/authenticate')
 
 const app = express()
+app.use(cors({
+    
+        "origin": "*",
+        "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "preflightContinue": false,
+        "optionsSuccessStatus": 204,
+        "exposedHeaders":['x-auth']
+
+      
+}))
 const port = process.env.PORT
 
 app.use(bodyParser.json())
